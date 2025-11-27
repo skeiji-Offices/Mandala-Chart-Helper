@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from "react"
-import { Check, Pencil, Trophy } from "lucide-react"
+import { Check, Pencil, Trophy, Printer } from "lucide-react"
 import confetti from "canvas-confetti"
 
 interface ActionItem {
@@ -32,6 +32,10 @@ export function FinalChartClient({ chartId, centerGoal, subGoals, initialActions
             inputRef.current.focus()
         }
     }, [editing])
+
+    const handlePrint = () => {
+        window.print()
+    }
 
     const saveActions = async (newActions: Record<string, ActionItem[]>) => {
         try {
@@ -150,7 +154,7 @@ export function FinalChartClient({ chartId, centerGoal, subGoals, initialActions
                                     </span>
                                     {subGoalIndex !== undefined && (
                                         <div
-                                            className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100"
+                                            className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100 no-print"
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 const subGoalKey = subGoals[subGoalIndex]
@@ -209,15 +213,24 @@ export function FinalChartClient({ chartId, centerGoal, subGoals, initialActions
     // Grid 8 (SE) -> SubGoal 7
 
     return (
-        <div className="flex flex-col items-center min-h-screen bg-gray-100 py-8 px-2">
-            <div className="mb-6 text-center">
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">{centerGoal}</h1>
-                <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+        <div className="flex flex-col items-center min-h-screen bg-gray-100 py-8 px-2 print:bg-white print:p-0">
+            <div className="mb-6 text-center w-full max-w-[1000px]">
+                <div className="flex justify-end w-full mb-4 no-print">
+                    <button
+                        onClick={handlePrint}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors text-sm"
+                    >
+                        <Printer className="w-4 h-4" />
+                        PDFとして保存 / 印刷
+                    </button>
+                </div>
+                <h1 className="text-2xl font-bold text-gray-800 mb-2 print:text-black">{centerGoal}</h1>
+                <div className="flex items-center justify-center gap-4 text-sm text-gray-600 no-print">
                     <span>達成度: {Math.round((completedActions / totalActions) * 100)}%</span>
                     <span>({completedActions}/{totalActions})</span>
                 </div>
                 {isAllCompleted && (
-                    <div className="mt-4 flex items-center justify-center gap-2 text-yellow-600 font-bold animate-bounce">
+                    <div className="mt-4 flex items-center justify-center gap-2 text-yellow-600 font-bold animate-bounce no-print">
                         <Trophy className="w-6 h-6" />
                         <span>コンプリート！おめでとうございます！</span>
                         <Trophy className="w-6 h-6" />
@@ -225,8 +238,8 @@ export function FinalChartClient({ chartId, centerGoal, subGoals, initialActions
                 )}
             </div>
 
-            <div className="aspect-square w-full max-w-[1000px] bg-white shadow-xl rounded-xl overflow-hidden border-4 border-gray-800">
-                <div className="grid grid-cols-3 grid-rows-3 gap-1 w-full h-full bg-gray-800 p-1">
+            <div className="aspect-square w-full max-w-[1000px] bg-white shadow-xl rounded-xl overflow-hidden border-4 border-gray-800 print:shadow-none print:border-2 print:max-w-none print:w-[270mm] print:h-[270mm]">
+                <div className="grid grid-cols-3 grid-rows-3 gap-1 w-full h-full bg-gray-800 p-1 print:bg-gray-400 print:gap-0.5 print:p-0.5">
                     {gridPositions.map(pos => {
                         if (pos === 4) {
                             // Center Grid
@@ -258,7 +271,7 @@ export function FinalChartClient({ chartId, centerGoal, subGoals, initialActions
                 </div>
             </div>
 
-            <div className="mt-8 text-center text-gray-500 text-xs">
+            <div className="mt-8 text-center text-gray-500 text-xs no-print">
                 <p>マスをクリックして編集、右上の丸をクリックして完了チェック</p>
             </div>
         </div>
