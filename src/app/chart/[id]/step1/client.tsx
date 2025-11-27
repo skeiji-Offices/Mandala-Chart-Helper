@@ -198,34 +198,54 @@ export function Step1Client({ chartId, centerGoal }: Step1ClientProps) {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {elements.map((element, index) => (
-                    <div
-                        key={index}
-                        className={`
-              relative p-6 bg-white border rounded-xl shadow-sm transition-all duration-200
-              ${editingIndex === index ? 'ring-2 ring-blue-500 border-transparent shadow-md' : 'hover:shadow-md hover:border-blue-300 cursor-pointer group'}
-            `}
-                        onClick={() => editingIndex !== index && handleEditStart(index, element)}
-                    >
-                        {editingIndex === index ? (
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                onBlur={handleEditSave}
-                                onKeyDown={handleKeyDown}
-                                className="w-full text-center font-semibold text-lg outline-none bg-transparent"
-                            />
-                        ) : (
-                            <div className="flex items-center justify-center text-center font-semibold text-lg h-full relative">
-                                {element}
-                                <Pencil className="w-4 h-4 text-gray-400 absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="grid grid-cols-3 gap-2 md:gap-4 aspect-square max-w-[800px] mx-auto">
+                {[...Array(9)].map((_, i) => {
+                    if (i === 4) {
+                        // Center Cell (Final Goal)
+                        return (
+                            <div
+                                key="center"
+                                className="flex items-center justify-center p-4 bg-yellow-100 border-2 border-yellow-400 rounded-xl shadow-sm text-center font-bold text-gray-900 select-none"
+                            >
+                                {centerGoal}
                             </div>
-                        )}
-                    </div>
-                ))}
+                        )
+                    }
+
+                    // Calculate element index (0-7)
+                    // Grid 0,1,2,3 -> Element 0,1,2,3
+                    // Grid 5,6,7,8 -> Element 4,5,6,7
+                    const elementIndex = i < 4 ? i : i - 1
+                    const element = elements[elementIndex]
+
+                    return (
+                        <div
+                            key={i}
+                            className={`
+                  relative p-2 md:p-4 bg-white border rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center
+                  ${editingIndex === elementIndex ? 'ring-2 ring-blue-500 border-transparent shadow-md' : 'hover:shadow-md hover:border-blue-300 cursor-pointer group'}
+                `}
+                            onClick={() => editingIndex !== elementIndex && handleEditStart(elementIndex, element)}
+                        >
+                            {editingIndex === elementIndex ? (
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onBlur={handleEditSave}
+                                    onKeyDown={handleKeyDown}
+                                    className="w-full h-full text-center font-semibold text-sm md:text-lg outline-none bg-transparent"
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center text-center font-semibold text-sm md:text-lg w-full h-full relative">
+                                    {element}
+                                    <Pencil className="w-4 h-4 text-gray-400 absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
             </div>
 
             <div className="mt-12 flex flex-col items-center gap-4">
