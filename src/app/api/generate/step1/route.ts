@@ -47,14 +47,19 @@ export async function POST(req: Request) {
             model: "gemini-2.5-flash",
         });
 
+        const sanitize = (str: string | number | null) => {
+            if (str === null || str === undefined) return "";
+            return String(str).replace(/["\\]/g, '\\$&').replace(/\n/g, " ");
+        };
+
         const prompt = `
     あなたはマンダラチャート作成のアシスタントです。
     ユーザーの「中心目標」と「現状」を元に、目標達成に必要な「8つの基礎要素」を提案してください。
     
     ## ユーザー情報
-    - 年齢: ${chart.age}
-    - 現状: ${chart.currentSituation}
-    - 中心目標: ${chart.centerGoal}
+    - 年齢: ${sanitize(chart.age)}
+    - 現状: ${sanitize(chart.currentSituation)}
+    - 中心目標: ${sanitize(chart.centerGoal)}
     
     ## 制約事項
     - **必ず日本語で出力してください。**
@@ -95,9 +100,9 @@ export async function POST(req: Request) {
     } catch (error) {
         const duration = Date.now() - startTime;
         console.error("CRITICAL API CRASH:", error);
+        // Security: Return generic error to client, log details to server
         return NextResponse.json({
             error: "Internal Server Error",
-            details: error instanceof Error ? error.message : String(error),
             duration: `${duration}ms`
         }, { status: 500 });
     }

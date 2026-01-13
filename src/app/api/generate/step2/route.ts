@@ -70,9 +70,12 @@ async function generateStep2Background(chartId: string, subGoalsJson: string | n
             // Skip if already generated (optional optimization)
             if (actionsMap[subGoal] && actionsMap[subGoal].length === 8) continue;
 
+            // Simple sanitization
+            const safeSubGoal = subGoal.replace(/["\\]/g, '\\$&').replace(/\n/g, " ");
+
             const prompt = `
         あなたはマンダラチャート作成のアシスタントです。
-        ユーザーの目標達成のために、サブゴール「${subGoal}」を達成するための具体的な行動目標（アクション）を8つ提案してください。
+        ユーザーの目標達成のために、サブゴール「${safeSubGoal}」を達成するための具体的な行動目標（アクション）を8つ提案してください。
         
         ## 制約事項
         - **必ず日本語で出力してください。**
