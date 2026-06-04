@@ -14,7 +14,7 @@ const CreateChartSchema = z.object({
 
 import { authOptions } from "@/lib/auth"
 
-export async function createChart(prevState: any, formData: FormData) {
+export async function createChart(prevState: unknown, formData: FormData) {
     const session = await getServerSession(authOptions)
 
     if (!session || !session.user || !session.user.id) {

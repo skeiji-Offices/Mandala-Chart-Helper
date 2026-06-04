@@ -16,14 +16,14 @@ export default async function FinalChartPage({ params }: { params: Promise<{ id:
     const subGoals: string[] = chart.subGoals ? JSON.parse(chart.subGoals) : [];
 
     // Parse actions and normalize to { title, completed }
-    let actions: Record<string, any[]> = {};
+    const actions: Record<string, { title: string; completed: boolean }[]> = {};
     if (chart.actions) {
         try {
             const parsed = JSON.parse(chart.actions);
             // Check if it's string[] or object[]
             // If string[], convert to object
             Object.keys(parsed).forEach(key => {
-                actions[key] = parsed[key].map((item: any) => {
+                actions[key] = (parsed[key] as (string | { title: string; completed: boolean })[]).map((item) => {
                     if (typeof item === 'string') {
                         return { title: item, completed: false };
                     }
